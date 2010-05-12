@@ -1,0 +1,56 @@
+setopt PROMPT_SUBST
+
+function prompt_vcs {
+  prompt_git
+}
+
+function prompt_git {
+  git_dir=`git rev-parse --git-dir 2> /dev/null`
+  [[ -n ${git_dir/./} ]] || return 1
+
+  eval "$( git status 2> /dev/null | grep '^\(# \)\?\w' |
+    sed -nE '
+      s/# On branch (.*)/        branch="\1"    /p
+      s/.*Not currently.*/       detatched='%U' /p
+
+      s/.*nothing to commit.*/   color=blue  /p
+      s/.*Changes.*/             color=green /p
+      s/.*(Changed|Untracked).*/ color=red   /p
+    '
+  )"
+
+  branch=${branch:-`git name-rev --name-only HEAD 2> /dev/null`}
+
+  echo -n " on %{$detatched%F{$color}%}$branch%{%f%u%}"
+}
+
+PROMPT=
+PROMPT+="%{%F{yellow}%}%~%{%f%}"
+PROMPT+="\$(prompt_vcs)"
+PROMPT+=" %(!.#.$) "
+export PROMPT
+
+
+# Output command results at each new prompt.
+
+# If a command has been run since the last invocation of `ps1_exit_code`,
+# output a newline between the results of that command and the new prompt.
+
+# Additionally, if the command had a non-zero exit code, output the numeric
+# error code before the newline.
+
+# TODO: Translate numeric exit codes into signal names?
+
+function preexec {
+  export PROMPT_COMMAND_EXECUTED=1
+}
+
+function precmd {
+  local exit_code=$status
+  if [[ -n $PROMPT_COMMAND_EXECUTED ]]; then
+    [[ $exit_code -ne 0 ]] && echo "${fg_bold[black]}# => $exit_code"
+    echo
+  fi
+
+  unset PROMPT_COMMAND_EXECUTED
+}
