@@ -23,6 +23,7 @@ function prompt_git {
 }
 
 PROMPT=
+PROMPT+="%{%F{magenta}%}%m%{%f%}:"
 PROMPT+="%{%F{yellow}%}%~%{%f%}"
 PROMPT+="\$(prompt_vcs)"
 PROMPT+=" %(!.#.$) "
