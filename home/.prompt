@@ -8,18 +8,16 @@ function prompt_git {
   git_dir=`git rev-parse --git-dir 2> /dev/null`
   [[ -n ${git_dir/./} ]] || return 1
 
-  eval "$( git status 2> /dev/null | grep '^\(# \)\?\w' |
-    sed -nE '
-      s/# On branch (.*)/        branch="\1"    /p
-      s/.*Not currently.*/       detatched='%U' /p
+  branch=`git name-rev --name-only --always HEAD 2> /dev/null`
+  [[ -n `git symbolic-ref -q HEAD` ]] || detatched='%U'
 
-      s/.*nothing to commit.*/   color=blue  /p
-      s/.*Changes.*/             color=green /p
-      s/.*(Changed|Untracked).*/ color=red   /p
-    '
-  )"
-
-  branch=${branch:-`git name-rev --name-only HEAD 2> /dev/null`}
+  if [[ -n `git ls-files -mokt --exclude-standard` ]]; then
+    color="red"
+  elif ( ! git diff --quiet --staged ); then
+    color="green"
+  else
+    color="blue"
+  fi
 
   echo -n " on %{$detatched%F{$color}%}$branch%{%f%u%}"
 }
