@@ -8,10 +8,10 @@ function prompt_git {
   git_dir=`git rev-parse --git-dir 2> /dev/null`
   [[ -n ${git_dir/./} ]] || return 1
 
-  branch=`git name-rev --name-only --always HEAD 2> /dev/null`
+  branch=`git symbolic-ref -q HEAD || git name-rev --name-only --always HEAD 2> /dev/null`
   [[ -n `git symbolic-ref -q HEAD` ]] || detatched='%U'
 
-  if [[ -n `git ls-files -mokt --exclude-standard` ]]; then
+  if ( ! git diff --quiet || [[ -n `git ls-files -o --exclude-standard` ]] ); then
     color="red"
   elif ( ! git diff --quiet --staged ); then
     color="green"
@@ -19,7 +19,7 @@ function prompt_git {
     color="blue"
   fi
 
-  echo -n " on %{$detatched%F{$color}%}$branch%{%f%u%}"
+  echo -n " on %{$detatched%F{$color}%}${branch/refs\/heads\//}%{%f%u%}"
 }
 
 PROMPT=
