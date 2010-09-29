@@ -1,5 +1,17 @@
 setopt PROMPT_SUBST
 
+function check_for {
+  which $* &>/dev/null
+}
+
+function environs {
+  check_for rvm && environ_rvm
+}
+
+function environ_rvm {
+  echo -n "%{%F{red}%}$(rvm tools identifier)%{%f%}"
+}
+
 function prompt_vcs {
   prompt_git
 }
@@ -23,6 +35,7 @@ function prompt_git {
 }
 
 PROMPT=
+PROMPT+="[\$(environs)] "
 PROMPT+="%{%F{magenta}%}%m%{%f%}:"
 PROMPT+="%{%F{yellow}%}%~%{%f%}"
 PROMPT+="\$(prompt_vcs)"
