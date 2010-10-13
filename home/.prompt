@@ -5,14 +5,21 @@ function check_for {
 }
 
 function environs {
-  local envs=()
+  envs=()
   envs+=$(check_for rvm && environ_rvm)
+  envs+=$(check_for perlbrew && environ_perlbrew)
 
-  [[ ${#envs} != 0 ]] && echo "[${(j< >)envs}] "
+  [[ ${#envs} != 0 ]] && echo "[${(j< >)envs# }] "
 }
 
 function environ_rvm {
   echo -n "%{%F{red}%}$(rvm tools identifier)%{%f%}"
+}
+
+function environ_perlbrew {
+  perl=$(perlbrew switch)
+  perl=${${perl##Currently switched (to |)}/off/system}
+  echo -n "%{%F{white}%}${perl}%{%f%}"
 }
 
 function prompt_vcs {
