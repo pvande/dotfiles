@@ -2,5 +2,13 @@ autoload -U colors && colors
 
 export HISTSIZE=1000000
 export SAVEHIST=1000000
+export HISTFILE=~/.zsh_history
+
+setopt APPEND_HISTORY
+setopt INC_APPEND_HISTORY
+setopt EXTENDED_HISTORY
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_NO_STORE
+setopt NO_HIST_BEEP
 
 source ~/.prompt
