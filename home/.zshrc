@@ -2,6 +2,8 @@ autoload -U colors && colors
 
 export EDITOR=$(which mate &>/dev/null && which mate || which vim)
 
+export PERLBREW_ROOT=~/.perlbrew
+
 export HISTSIZE=1000000
 export SAVEHIST=1000000
 export HISTFILE=~/.zsh_history
