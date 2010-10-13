@@ -2,6 +2,10 @@ autoload -U colors && colors
 
 export EDITOR=$(which mate &>/dev/null && which mate || which vim)
 
+# rvm Setup
+[[ -s ~/.rvm/scripts/rvm ]] && source ~/.rvm/scripts/rvm
+
+# perlbrew Setup
 export PERLBREW_ROOT=~/.perlbrew
 
 export HISTSIZE=1000000
