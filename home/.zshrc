@@ -7,6 +7,7 @@ export EDITOR=$(which mate &>/dev/null && which mate || which vim)
 
 # perlbrew Setup
 export PERLBREW_ROOT=~/.perlbrew
+[[ -s $PERLBREW_ROOT/etc/bashrc ]] && source $PERLBREW_ROOT/etc/bashrc
 
 export HISTSIZE=1000000
 export SAVEHIST=1000000
