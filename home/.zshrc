@@ -9,6 +9,9 @@ export EDITOR=$(which mate &>/dev/null && which mate || which vim)
 export PERLBREW_ROOT=~/.perlbrew
 [[ -s $PERLBREW_ROOT/etc/bashrc ]] && source $PERLBREW_ROOT/etc/bashrc
 
+# cpanminus Setup
+export PERL_CPANM_OPT="--skip-installed --prompt"
+
 export HISTSIZE=1000000
 export SAVEHIST=1000000
 export HISTFILE=~/.zsh_history
