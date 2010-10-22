@@ -1,6 +1,7 @@
 autoload -U colors && colors
 
 export EDITOR=$(which mate &>/dev/null && which mate || which vim)
+bindkey -e  # Turns out, zsh thinks Vim users want Vim mode automatically...
 
 # rvm Setup
 [[ -s ~/.rvm/scripts/rvm ]] && source ~/.rvm/scripts/rvm
