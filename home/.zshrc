@@ -25,3 +25,4 @@ setopt HIST_NO_STORE
 setopt NO_HIST_BEEP
 
 source ~/.prompt
+source ~/.zsh-completion
