@@ -1,7 +1,7 @@
 autoload -U colors && colors
 
 export PAGER="less -R"
-export EDITOR=$(which mate &>/dev/null && which mate || which vim)
+export EDITOR="$(which mate &>/dev/null && echo -n mate -w || which vim)"
 
 bindkey -e  # Turns out, zsh thinks Vim users want Vim mode automatically...
 bindkey "^[b" vi-backward-word
