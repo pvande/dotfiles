@@ -9,7 +9,7 @@ function environs {
   envs+=$(check_for rvm && environ_rvm)
   envs+=$(check_for perlbrew && environ_perlbrew)
 
-  [[ ${#envs} != 0 ]] && echo "[${${(j< >)envs# }% }] "
+  [[ ${#envs} != 0 ]] && echo "[${${(j< >)envs# }% }]"
 }
 
 function environ_rvm {
@@ -45,13 +45,14 @@ function prompt_git {
 }
 
 PROMPT=
-PROMPT+="\$(environs)"
 PROMPT+="%{%F{magenta}%}%m%{%f%}:"
 PROMPT+="%{%F{yellow}%}%~%{%f%}"
 PROMPT+="\$(prompt_vcs)"
 PROMPT+=" %(!.#.$) "
 export PROMPT
 
+RPROMPT="\$(environs)"
+export RPROMPT
 
 # Output command results at each new prompt.
 
