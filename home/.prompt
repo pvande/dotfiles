@@ -7,6 +7,7 @@ function check_for {
 function environs {
   envs=()
   envs+=$(check_for rvm && environ_rvm)
+  envs+=$(check_for rbenv && environ_rbenv)
   envs+=$(check_for perlbrew && environ_perlbrew)
 
   [[ ${#envs} != 0 ]] && echo "[${${(j< >)envs# }% }]"
@@ -14,6 +15,11 @@ function environs {
 
 function environ_rvm {
   echo -n "%{%F{red}%}$(rvm tools identifier)%{%f%}"
+}
+
+function environ_rbenv {
+  active_gemsets="$(rbenv gemset active 2>/dev/null)"
+  echo -n "%{%F{red}%}$(rbenv version | cut -d ' ' -f1)${active_gemsets:+@$active_gemsets}%{%f%}"
 }
 
 function environ_perlbrew {
