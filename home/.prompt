@@ -48,6 +48,14 @@ function prompt_git {
   fi
 
   echo -n " on %{$detatched%F{$color}%}${branch/refs\/heads\//}%{%f%u%}"
+
+  if [[ -x `which spark` ]]; then
+    echo -n "%F{black}%B"
+    echo -n ' ['
+    echo -n "`for day in $(seq 7 -1 0); do git log --before="${day} days" --after="$[${day}+1] days" --format=oneline | wc -l; done | spark`"
+    echo -n ']'
+    echo -n "%{%f%b%}"
+  fi
 }
 
 PROMPT=
