@@ -10,6 +10,9 @@ bindkey "^[f" vi-forward-word
 # rvm Setup
 [[ -s ~/.rvm/scripts/rvm ]] && source ~/.rvm/scripts/rvm
 
+# rbenv Setup
+[[ -s /usr/local/bin/rbenv ]] && eval "$(rbenv init - zsh)"
+
 # perlbrew Setup
 export PERLBREW_ROOT=~/.perlbrew
 [[ -s $PERLBREW_ROOT/etc/bashrc ]] && source $PERLBREW_ROOT/etc/bashrc
