@@ -30,6 +30,8 @@ good() {
   echo '✅ ' "$@"
 }
 
+TMPDIR=$(mktemp -d)
+
 announce "Configuring $(hostname -s)"
 
 sudo_permissions="[ '$(stat -f '%Su:%p' /usr/local 2>&1)' != '$(whoami):40775' ]"
@@ -120,4 +122,5 @@ for sh in $DOTFILES_HOME/config/*.sh ; do
 done
 unset sh
 
+rm -r $TMPDIR
 announce "All set!"
