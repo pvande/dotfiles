@@ -1,14 +1,16 @@
 #!/bin/bash
 
+BINDIR="/usr/local/bin"
 HOMEBREW_HOME="/usr/local/Homebrew"
 HOMEBREW_CORE_HOME="${HOMEBREW_HOME}/Library/Taps/homebrew/homebrew-core"
 HOMEBREW_TARBALL="https://github.com/Homebrew/brew/tarball/master"
 HOMEBREW_CORE_TARBALL="https://github.com/Homebrew/homebrew-core/tarball/master"
-PROJECTS_HOME="~/Projects"
+PROJECTS_HOME="${HOME}/Projects"
 DOTFILES_REPO="https://github.com/pvande/dotfiles"
+DOTFILES_HOME="${PROJECTS_HOME}/dotfiles"
 
 abort() {
-  echo '‼️ ' "$@"
+  echo '‼️ ' "$@" "See $LOGFILE for details."
   exit 1
 }
 
@@ -28,7 +30,7 @@ good() {
   echo '✅ ' "$@"
 }
 
-announce "Bootstrapping $(hostname -s)"
+announce "Configuring $(hostname -s)"
 
 sudo_permissions="[ '$(stat -f '%Su:%p' /usr/local 2>&1)' != '$(whoami):40775' ]"
 sudo_xcode_tools="[ ! -x $('/usr/bin/xcode-select' -print-path 2>/dev/null || echo '/dev/null')/usr/bin/git ]"
@@ -62,55 +64,55 @@ good "Permissions on /usr/local are correct..."
 good "Xcode Command Line Tools are present..."
 
 LOGFILE="${TMPDIR}/homebrew.log"
-if [ ! -x /usr/local/bin/brew ]; then
+if [ ! -x $BINDIR/brew ]; then
   info "Installing Homebrew..."
-  mkdir -p /usr/local/{Cellar,Homebrew,Frameworks,bin,etc,include,lib,opt,sbin,share{,/zsh{,/site-functions}},var}
-  mkdir -p ~/Library/Caches/Homebrew
   {
-    echo "Downloading and unpacking Homebrew..." > $LOGFILE &&
+    echo "Downloading and unpacking Homebrew..." &&
+    mkdir -p $BINDIR &&
+    mkdir -p $HOMEBREW_HOME &&
     cd $HOMEBREW_HOME &&
-    /bin/bash -o pipefail -c "/usr/bin/curl -fsSL $HOMEBREW_TARBALL | /usr/bin/tar xz -m --strip 1" &&
-    ln -sf ${HOMEBREW_HOME}/bin/brew /usr/local/bin/brew &&
+    /usr/bin/curl -fsSL $HOMEBREW_TARBALL | /usr/bin/tar xz -m --strip 1 &&
+    ln -sf ${HOMEBREW_HOME}/bin/brew $BINDIR/brew &&
 
-    echo "Downloading and unpacking Homebrew Core..." >> $LOGFILE &&
+    echo "Downloading and unpacking Homebrew Core..." &&
     mkdir -p $HOMEBREW_CORE_HOME &&
     cd $HOMEBREW_CORE_HOME &&
-    /bin/bash -o pipefail -c "/usr/bin/curl -fsSL $HOMEBREW_CORE_TARBALL | /usr/bin/tar xz -m --strip 1" &&
+    /usr/bin/curl -fsSL $HOMEBREW_CORE_TARBALL | /usr/bin/tar xz -m --strip 1 &&
 
-    echo 'Running `brew update --force`...' >> $LOGFILE &&
-    brew update --force 2>&1 | cat >> $LOGFILE
-  } || abort "Could not install Homebrew!  See $LOGFILE for details."
+    echo 'Running `brew update --force`...' &&
+    brew update --force
+  } &>$LOGFILE || abort "Could not install Homebrew!"
 else
   {
-    /usr/local/bin/brew update 2>&1 | cat >> $LOGFILE
-  } || abort "Could not update Homebrew!  See $LOGFILE for details."
+    $BINDIR/brew update
+  } &>$LOGFILE || abort "Could not update Homebrew!"
 fi
 good "Homebrew is up-to-date..."
 
-PATH="/usr/local/bin:$PATH"
+PATH="$BINDIR:$PATH"
 
 LOGFILE="${TMPDIR}/git.log"
-if !(/usr/local/bin/brew ls git &>/dev/null); then
+if !($BINDIR/brew ls git &>/dev/null); then
   info "Installing Git from Homebrew..."
   {
-    /usr/local/bin/brew install git &>$LOGFILE
-  } || abort "Could not install Git!  See $LOGFILE for details."
+    $BINDIR/brew install git
+  } &>$LOGFILE || abort "Could not install Git!"
 fi
 good "Git is present..."
 
 LOGFILE="${TMPDIR}/dotfiles.log"
 if [ ! -d $PROJECTS_HOME/dotfiles ]; then
-  info "Cloning $DOTFILES_REPO to ~/Projects/dotfiles..."
+  info "Cloning $DOTFILES_REPO to $DOTFILES_HOME..."
   {
-    git clone $DOTFILES_REPO $PROJECTS_HOME/dotfiles &>$LOGFILE
-  } || abort "Could not clone $DOTFILES_REPO!  See $LOGFILE for details."
-elif !(cd ~/Projects/dotfiles && git fetch -q && git status | grep -q 'up-to-date'); then
-  info "Updating ~/Projects/dotfiles..."
+    git clone $DOTFILES_REPO $DOTFILES_HOME
+  } &>$LOGFILE || abort "Could not clone $DOTFILES_REPO!"
+elif !(cd $DOTFILES_HOME && git fetch -q && git status | grep -q 'up-to-date'); then
+  info "Updating $DOTFILES_HOME..."
   {
-    cd ~/Projects/dotfiles &&
-    git merge origin/master &>$LOGFILE
-  } || abort "Could not update $DOTFILES_REPO!  See $LOGFILE for details."
+    cd $DOTFILES_HOME &&
+    git merge origin/master
+  } &>$LOGFILE || abort "Could not update $DOTFILES_REPO!"
 fi
-good "~/Projects/dotfiles is up-to-date..."
+good "$DOTFILES_HOME is up-to-date..."
 
 announce "All set!"
