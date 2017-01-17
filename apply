@@ -115,4 +115,9 @@ elif !(cd $DOTFILES_HOME && git fetch -q && git status | grep -q 'up-to-date'); 
 fi
 good "$DOTFILES_HOME is up-to-date..."
 
+for sh in $DOTFILES_HOME/config/*.sh ; do
+  [ -r "${sh}" ] && source "${sh}"
+done
+unset sh
+
 announce "All set!"
