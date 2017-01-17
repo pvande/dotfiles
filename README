@@ -1,0 +1,1 @@
+`curl -fsSL https://raw.githubusercontent.com/pvande/dotfiles/master/apply | bash`
