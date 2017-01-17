@@ -115,7 +115,7 @@ elif !(cd $DOTFILES_HOME && git fetch -q && git status | grep -q 'up-to-date'); 
     git merge origin/master
   } &>$LOGFILE || abort "Could not update $DOTFILES_REPO!"
 fi
-good "$DOTFILES_HOME is up-to-date..."
+good "dotfiles repository is up-to-date..."
 
 for sh in $DOTFILES_HOME/config/*.sh ; do
   [ -r "${sh}" ] && source "${sh}"
