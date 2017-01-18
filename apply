@@ -30,24 +30,44 @@ good() {
   echo '✅ ' "$@"
 }
 
+installed() {
+  $BINDIR/brew ls $@ &>/dev/null
+}
+
+postinstall() {
+  local var="postinstall_$1"
+  [ "${!var}" != '-' ] && {
+    echo -n "❗️ " "$1 Caveats"
+    {
+      if [ -z "${!var}" ]; then
+        echo
+        brew info $1 | sed '/==> Caveats/,/==>/!d;//d'
+      else
+        echo -e "${!var}"
+      fi
+    } | sed -e 's/^/   /'
+  }
+}
+
 TMPDIR=$(mktemp -d)
 
 announce "Configuring $(hostname -s)"
 
-sudo_permissions="[ '$(stat -f '%Su:%p' /usr/local 2>&1)' != '$(whoami):40775' ]"
+sudo_permissions="[ '$(stat -f '%Su:%p' /usr/local 2>&1)' != '$USER:40775' ]"
 sudo_xcode_tools="[ ! -x $('/usr/bin/xcode-select' -print-path 2>/dev/null || echo '/dev/null')/usr/bin/git ]"
-
-if $sudo_permissions || $sudo_xcode_tools; then
+sudo_etc_shells='grep -q /usr/local/bin/zsh /etc/shells'
+if $sudo_permissions || $sudo_xcode_tools || !($sudo_etc_shells); then
   warn "Super-user privileges are required for the following changes:"
-  $sudo_permissions && warn "  Fixing permissions on /usr/local"
-  $sudo_xcode_tools && warn "  Installing the Xcode Command Line Tools"
+  $sudo_permissions   && warn "  Fixing permissions on /usr/local"
+  $sudo_xcode_tools   && warn "  Installing the Xcode Command Line Tools"
+  !($sudo_etc_shells) && warn "  Adding zsh to /etc/shells"
   sudo -k
   sudo -v
 
   if $sudo_permissions; then
     info "Fixing permissions on /usr/local..."
     sudo mkdir -p /usr/local &&
-    sudo chown -R $(whoami):staff /usr/local &&
+    sudo chown -R $USER:staff /usr/local &&
     chmod -R 0775 /usr/local
   fi
 
@@ -59,11 +79,17 @@ if $sudo_permissions || $sudo_xcode_tools; then
     sudo '/usr/bin/xcode-select' --switch /Library/Developer/CommandLineTools &>/dev/null
   fi
 
+  if !($sudo_etc_shells); then
+    info "Adding zsh to /etc/shells..."
+    sudo sh -c "echo '/usr/local/bin/zsh' >> /etc/shells"
+  fi
+
   warn "Releasing super-user privileges."
   sudo -k
 fi
 good "Permissions on /usr/local are correct..."
 good "Xcode Command Line Tools are present..."
+good "zsh is in /etc/shells..."
 
 LOGFILE="${TMPDIR}/homebrew.log"
 if [ ! -x $BINDIR/brew ]; then
@@ -94,13 +120,14 @@ good "Homebrew is up-to-date..."
 PATH="$BINDIR:$PATH"
 
 LOGFILE="${TMPDIR}/git.log"
-if !($BINDIR/brew ls git &>/dev/null); then
+if !(installed git); then
   info "Installing Git from Homebrew..."
   {
     $BINDIR/brew install git
   } &>$LOGFILE || abort "Could not install Git!"
 fi
 good "Git is present..."
+export postinstall_git="-"
 
 LOGFILE="${TMPDIR}/dotfiles.log"
 if [ ! -d $PROJECTS_HOME/dotfiles ]; then
@@ -121,6 +148,12 @@ for sh in $DOTFILES_HOME/config/*.sh ; do
   [ -r "${sh}" ] && source "${sh}"
 done
 unset sh
+
+for cmd in $(brew list); do
+  if (brew info $cmd | grep -q Caveats); then
+    postinstall $cmd
+  fi
+done
 
 rm -r $TMPDIR
 announce "All set!"
