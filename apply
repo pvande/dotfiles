@@ -37,13 +37,12 @@ installed() {
 postinstall() {
   local var="postinstall_$1"
   [ "${!var}" != '-' ] && {
-    echo -n "❗️ " "$1 Caveats"
+    echo "❗️ " "$1 Caveats"
     {
       if [ -z "${!var}" ]; then
-        echo
         brew info $1 | sed '/==> Caveats/,/==>/!d;//d'
       else
-        echo -e "${!var}"
+        echo -ne "${!var}"
       fi
     } | sed -e 's/^/   /'
   }
