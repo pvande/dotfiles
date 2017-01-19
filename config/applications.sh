@@ -1,6 +1,6 @@
 function cache-hint() {
   local url="$1"
-  local headers="$(curl -fsSLI "$url") 2>/dev/null"
+  local headers="$(curl -fsSLI "$url" 2>/dev/null)"
   local hint=$(echo "$headers" | grep -i 'etag:' | awk '{ print $2 }' | sed 's/"//g')
   [ -z "$hint" ] && hint=$(echo "$headers" | grep -i 'last-modified')
   echo "$hint"
@@ -87,3 +87,5 @@ install-app 'Google Chrome' 'https://dl.google.com/chrome/mac/stable/GoogleChrom
 install-app 'Atom' 'https://atom.io/download/mac'
 install-app 'Github Desktop' 'https://central.github.com/mac/latest'
 install-app 'SizeUp' 'http://www.irradiatedsoftware.com/download/SizeUp.zip'
+install-app 'Spectacle' 'https://s3.amazonaws.com/spectacle/downloads/Spectacle+1.2.zip'
+install-app 'WMail' 'https://github.com/Thomas101/wmail/releases/download/v2.0.0/WMail_2_0_0_osx.dmg'
