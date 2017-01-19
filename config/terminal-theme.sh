@@ -12,6 +12,7 @@ if [ "$startup" != "Pro" ] || [ "$default" != "Pro" ]; then
   set font name of pro to "Meslo LG M Regular for Powerline"
   set font size of pro to 20
   set font antialiasing of pro to true
+  set background color of pro to "black"
   set default settings to pro
   set startup settings to pro
   repeat with w in windows
