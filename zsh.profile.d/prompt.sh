@@ -6,29 +6,35 @@ function check_for {
 
 function environs {
   envs=()
-  envs+=$(check_for rbenv && environ_rbenv)
-  envs+=$(check_for node && environ_node)
+  envs+=$(check_for rbenv && environ_ruby)
+  envs+=$(check_for nodenv && environ_node)
 
   [[ ${#envs} != 0 ]] || return
 
-  echo -n "%{%F{black}%K{black}%}"
+  echo -n "%{%F{0}%K{0}%}"
   for env in $envs; do
-    echo -n "${(S)env/</"\uE0B2%S%{%K{black}%}"}%s "
+    echo -n "${(S)env/</"\uE0B2%S%{%K{0}%}"}%s "
   done
   echo -n "%{%f%k%}"
 }
 
-function environ_rbenv {
+function environ_ruby {
+  version=$(rbenv version | awk '{ print $1 }')
+  if [ $version != 'system' ]; then
   active_gemsets="$(rbenv gemset active 2>/dev/null)"
-  echo -n "%F{red}"
-  echo -n "< $(rbenv version | cut -d \  -f1)${active_gemsets:+ ($active_gemsets)}"
-  echo -n "%K{red}"
+    echo -n "%F{160}"
+    echo -n "< %K{15}⌔ ${version}${active_gemsets:+ ($active_gemsets)}%k"
+    echo -n "%K{160}"
+  fi
 }
 
 function environ_node {
-  echo -n "%F{blue}"
-  echo -n "< $(node --version)"
-  echo -n "%K{blue}"
+  version=$(nodenv version | awk '{ print $1 }')
+  if [ $version != 'system' ]; then
+    echo -n "%F{22}"
+    echo -n "< %K{15}⬢ ${version}%k"
+    echo -n "%K{22}"
+  fi
 }
 
 function prompt_vcs {
@@ -43,19 +49,19 @@ function prompt_git {
   [[ -n `git symbolic-ref -q HEAD` ]] || detatched='%U'
 
   if ( ! git diff --quiet || [[ -n `git ls-files -o --exclude-standard` ]] ); then
-    color="red"
+    color="161"
   elif ( ! git diff --quiet --staged ); then
-    color="green"
+    color="119"
   else
-    color="blue"
+    color="20"
   fi
 
   echo -n " on %{$detatched%F{$color}%}${branch/refs\/heads\//}%{%f%u%}"
 }
 
 PROMPT=
-PROMPT+="%{%F{magenta}%}%m%{%f%}:"
-PROMPT+="%{%F{yellow}%}%~%{%f%}"
+PROMPT+="%{%F{141}%}%m%{%f%}:"
+PROMPT+="%{%F{221}%}%~%{%f%}"
 PROMPT+="\$(prompt_vcs)"
 PROMPT+=" %(!.#.$) "
 export PROMPT
@@ -80,7 +86,7 @@ function preexec {
 function precmd {
   local exit_code=$status
   if [[ -n $PROMPT_COMMAND_EXECUTED ]]; then
-    [[ $exit_code -ne 0 ]] && echo "${fg_bold[black]}# => $exit_code"
+    [[ $exit_code -ne 0 ]] && echo -e "\e[38;5;248m# => $exit_code"
     echo
   fi
 
