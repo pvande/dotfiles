@@ -1,6 +1,6 @@
 function cache-hint() {
   local url="$1"
-  local headers="$(curl -fsSLI "$url")"
+  local headers="$(curl -fsSLI "$url") 2>/dev/null"
   local hint=$(echo "$headers" | grep -i 'etag:' | awk '{ print $2 }' | sed 's/"//g')
   [ -z "$hint" ] && hint=$(echo "$headers" | grep -i 'last-modified')
   echo "$hint"
@@ -17,7 +17,7 @@ function download-app() {
   local target="$3"
 
   info "Downloading $name from $url..."
-  curl -fsSL "$url" > "$target"
+  curl -fsSL "$url" > "$target" 2>&1
 }
 
 function is-dmg() {
