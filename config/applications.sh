@@ -1,23 +1,17 @@
-function cache-hint() {
-  local url="$1"
-  local headers="$(curl -fsSLI "$url" 2>/dev/null)"
-  local hint=$(echo "$headers" | grep -i 'etag:' | awk '{ print $2 }' | sed 's/"//g')
-  [ -z "$hint" ] && hint=$(echo "$headers" | grep -i 'last-modified')
-  echo "$hint"
-}
-
 function installed-version() {
   local app="/Applications/$1.app"
-  [ -r "$app" ] && xattr -p 'dev.bootstrap:checksum' "$app" 2>/dev/null || echo '-'
+  [ -r "$app" ] && xattr -p "dev.bootstrap.cache:$2" "$app" 2>/dev/null || echo '-'
 }
 
 function download-app() {
   local name="$1"
   local url="$2"
   local target="$3"
+  local etag="If-None-Match: $4"
+  local date="If-Modified-Since: $5"
 
-  info "Downloading $name from $url..."
-  curl -fsSL "$url" > "$target" 2>&1
+  # TODO: Log if non-403 response *before* downloading file.
+  curl -fsSLv "$url" --header "$etag" --header "$date" -o "$target" 2>&1
 }
 
 function is-dmg() {
@@ -49,22 +43,22 @@ function mount-app() {
 }
 
 function install-app() {
-  local name="$1"
-  local url="$2"
+  local name="${1//: *}"
+  local url="${1//*: }"
 
   local download=$(mktemp)
   unlink $download
 
-  local installed=$(installed-version "$name")
-  local hint=$(cache-hint "$url")
+  local etag=$(installed-version "$name" etag)
+  local date=$(installed-version "$name" date)
+  local xsum=$(installed-version "$name" xsum)
 
-  if [ "$installed" != '-' ] && [ -z "$hint" ]; then
-    download-app "$name" "$url" "$download"
-    hint=$(md5 -q $download)
-  fi
+  local headers=$(download-app "$name" "$url" "$download" "$etag" "$date")
 
-  if [ "$installed" == '-' ] || [ "$installed" != "$hint" ]; then
-    [ -e $download ] || download-app "$name" "$url" "$download"
+  if [ -s $download ] && [ $(md5 -q $download) != $xsum ]; then
+    etag="$(echo "$headers" | grep -i 'etag:' | awk '{ print $3 }' | sed 's/"//g')"
+    date="$(echo "$headers" | grep -i 'last-modified' | sed 's/< Last-Modified: //')"
+    xsum="$(md5 -q $download)"
 
     local mount=$(mktemp -d)
     LOGFILE="${TMPDIR}/install-app-${name// /-}.log"
@@ -77,15 +71,23 @@ function install-app() {
       } &&
 
       ditto --noqtn "$mount/$name.app" "/Applications/$name.app" &&
-      xattr -w 'dev.bootstrap:checksum' "$hint" "/Applications/$name.app"
+      ([ -z "$etag" ] || xattr -w 'dev.bootstrap.cache:etag' "$etag" "/Applications/$name.app") &&
+      ([ -z "$date" ] || xattr -w 'dev.bootstrap.cache:date' "$date" "/Applications/$name.app") &&
+      ([ -z "$xsum" ] || xattr -w 'dev.bootstrap.cache:xsum' "$xsum" "/Applications/$name.app")
     } &>$LOGFILE || abort "Could not install $name!"
   fi
   good "$name is up-to-date..."
 }
 
-install-app 'Google Chrome' 'https://dl.google.com/chrome/mac/stable/GoogleChrome.dmg'
-install-app 'Atom' 'https://atom.io/download/mac'
-install-app 'Github Desktop' 'https://central.github.com/mac/latest'
-install-app 'SizeUp' 'http://www.irradiatedsoftware.com/download/SizeUp.zip'
-install-app 'Spectacle' 'https://s3.amazonaws.com/spectacle/downloads/Spectacle+1.2.zip'
-install-app 'WMail' 'https://github.com/Thomas101/wmail/releases/download/v2.0.0/WMail_2_0_0_osx.dmg'
+mappings="
+  'Google Chrome': 'https://dl.google.com/chrome/mac/stable/GoogleChrome.dmg'
+  'Atom': 'https://atom.io/download/mac'
+  'Github Desktop': 'https://central.github.com/mac/latest'
+  'Spectacle': 'https://s3.amazonaws.com/spectacle/downloads/Spectacle+1.2.zip'
+  'WMail': 'https://github.com/Thomas101/wmail/releases/download/v2.0.0/WMail_2_0_0_osx.dmg'
+"
+
+export -f info warn abort good
+export -f install-app installed-version download-app is-dmg is-zip is-tarball mount-app
+echo "$mappings" | xargs -L1 -I @ -P16 bash -c "install-app '@'"
+unset -f install-app installed-version download-app is-dmg is-zip is-tarball mount-app
