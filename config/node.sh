@@ -17,3 +17,5 @@ if !(installed yarn); then
 fi
 good "yarn is present..."
 export postinstall_node="-"
+
+global-gitignore .node-version

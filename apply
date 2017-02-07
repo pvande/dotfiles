@@ -48,6 +48,18 @@ postinstall() {
   }
 }
 
+ensure-line-in-file() {
+  local file="$1"
+  shift
+  local line="$*"
+
+  grep -qs "$line" "$file" || echo "$line" >> "$file"
+}
+
+global-gitignore() {
+  ensure-line-in-file "${HOME}/.config/git/ignore" $*
+}
+
 TMPDIR=$(mktemp -d)
 
 announce "Configuring $(hostname -s)"

@@ -8,6 +8,9 @@ if !(installed rbenv); then
 fi
 good "rbenv is present..."
 
+global-gitignore .ruby-version
+global-gitignore .rbenv-gemsets
+
 export postinstall_autoconf="-"
 export postinstall_openssl="-"
 export postinstall_rbenv="-"
