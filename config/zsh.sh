@@ -12,5 +12,5 @@ if [ $current_shell == "/usr/local/bin/zsh" ]; then
   postinstall_zsh+="-"
 else
   postinstall_zsh+="To set zsh as your default login shell,\n"
-  postinstall_zsh+="run \033[1;30mchsh -s /usr/local/bin/zsh\033[0m\n"
+  postinstall_zsh+="run \`chsh -s /usr/local/bin/zsh\`"
 fi

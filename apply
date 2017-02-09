@@ -64,7 +64,7 @@ TMPDIR=$(mktemp -d)
 
 announce "Configuring $(hostname -s)"
 
-sudo_permissions="[ '$(stat -f '%Su:%p' /usr/local 2>&1)' != '$USER:40775' ]"
+sudo_permissions="[ '$(stat -f '%u:%Sg:%p' /usr/local 2>&1)' != '501:staff:40775' ]"
 sudo_xcode_tools="[ ! -x $('/usr/bin/xcode-select' -print-path 2>/dev/null || echo '/dev/null')/usr/bin/git ]"
 sudo_etc_shells='grep -q /usr/local/bin/zsh /etc/shells'
 if $sudo_permissions || $sudo_xcode_tools || !($sudo_etc_shells); then
@@ -78,8 +78,7 @@ if $sudo_permissions || $sudo_xcode_tools || !($sudo_etc_shells); then
   if $sudo_permissions; then
     info "Fixing permissions on /usr/local..."
     sudo mkdir -p /usr/local &&
-    sudo chown -R $USER:staff /usr/local &&
-    chmod -R 0775 /usr/local
+    sudo chown -R 501:staff /usr/local
   fi
 
   if $sudo_xcode_tools; then
@@ -98,6 +97,9 @@ if $sudo_permissions || $sudo_xcode_tools || !($sudo_etc_shells); then
   warn "Releasing super-user privileges."
   sudo -k
 fi
+
+chmod -R 0775 /usr/local
+
 good "Permissions on /usr/local are correct..."
 good "Xcode Command Line Tools are present..."
 good "zsh is in /etc/shells..."
@@ -165,6 +167,8 @@ for cmd in $(brew list); do
     postinstall $cmd
   fi
 done
+
+chmod -R 0775 /usr/local
 
 rm -r $TMPDIR
 announce "All set!"
