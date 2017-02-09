@@ -20,7 +20,7 @@ function environs {
 
 function environ_ruby {
   version=$(rbenv version | awk '{ print $1 }')
-  if [ $version != 'system' ]; then
+  if [ $version != 'system' ] && [ $version != '(set' ]; then
   active_gemsets="$(rbenv gemset active 2>/dev/null)"
     echo -n "%F{160}"
     echo -n "< %K{15}⌔ ${version}${active_gemsets:+ ($active_gemsets)}%k"
@@ -30,7 +30,7 @@ function environ_ruby {
 
 function environ_node {
   version=$(nodenv version | awk '{ print $1 }')
-  if [ $version != 'system' ]; then
+  if [ $version != 'system' ] && [ $version != '(set' ]; then
     echo -n "%F{22}"
     echo -n "< %K{15}⬢ ${version}%k"
     echo -n "%K{22}"
