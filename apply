@@ -1,5 +1,7 @@
 #!/bin/bash
 
+XDG_CONFIG_HOME="${HOME}/.config"
+
 BINDIR="/usr/local/bin"
 HOMEBREW_HOME="/usr/local/Homebrew"
 HOMEBREW_CORE_HOME="${HOMEBREW_HOME}/Library/Taps/homebrew/homebrew-core"
@@ -57,7 +59,7 @@ ensure-line-in-file() {
 }
 
 global-gitignore() {
-  ensure-line-in-file "${HOME}/.config/git/ignore" $*
+  ensure-line-in-file "${XDG_CONFIG_HOME}/git/ignore" $*
 }
 
 TMPDIR=$(mktemp -d)
