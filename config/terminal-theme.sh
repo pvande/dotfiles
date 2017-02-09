@@ -1,6 +1,3 @@
-dir="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
-source $dir/.powerline.sh
-
 startup=$(defaults read com.apple.Terminal "Startup Window Settings")
 default=$(defaults read com.apple.Terminal "Default Window Settings")
 if [ "$startup" != "Pro" ] || [ "$default" != "Pro" ]; then
