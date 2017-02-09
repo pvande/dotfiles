@@ -3,7 +3,7 @@ if !(installed rbenv); then
   {
     $BINDIR/brew install rbenv &&
     $BINDIR/brew install rbenv-gemset &&
-    mkdir -p /usr/local/var/rbenv
+    mkdir -p /usr/local/var/rbenv/{shims,versions}
   } &>$LOGFILE || abort "Could not install rbenv!"
 fi
 good "rbenv is present..."

@@ -3,7 +3,7 @@ if !(installed nodenv); then
   LOGFILE="${TMPDIR}/install-nodenv.log"
   {
     $BINDIR/brew install nodenv &&
-    mkdir -p /usr/local/var/nodenv
+    mkdir -p /usr/local/var/nodenv/{shims,versions}
   } &>$LOGFILE || abort "Could not install nodenv!"
 fi
 good "nodenv is present..."
