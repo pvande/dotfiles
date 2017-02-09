@@ -2,7 +2,8 @@ if !(installed nodenv); then
   info "Installing nodenv from Homebrew..."
   LOGFILE="${TMPDIR}/install-nodenv.log"
   {
-    $BINDIR/brew install nodenv
+    $BINDIR/brew install nodenv &&
+    mkdir -p /usr/local/var/nodenv
   } &>$LOGFILE || abort "Could not install nodenv!"
 fi
 good "nodenv is present..."
@@ -17,5 +18,6 @@ if !(installed yarn); then
 fi
 good "yarn is present..."
 export postinstall_node="-"
+export postinstall_icu4c="-"
 
 global-gitignore .node-version
