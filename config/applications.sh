@@ -71,6 +71,7 @@ function install-app() {
       } &&
 
       ditto --noqtn "$mount/$name.app" "/Applications/$name.app" &&
+      chmod g+w "/Applications/$name.app" &&
       ([ -z "$etag" ] || xattr -w 'dev.bootstrap.cache:etag' "$etag" "/Applications/$name.app") &&
       ([ -z "$date" ] || xattr -w 'dev.bootstrap.cache:date' "$date" "/Applications/$name.app") &&
       ([ -z "$xsum" ] || xattr -w 'dev.bootstrap.cache:xsum' "$xsum" "/Applications/$name.app")
