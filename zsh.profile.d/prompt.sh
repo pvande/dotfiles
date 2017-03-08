@@ -7,6 +7,7 @@ function check_for {
 function environs {
   envs=()
   envs+=$(check_for rbenv && environ_ruby)
+  envs+=$(check_for goenv && environ_go)
   envs+=$(check_for nodenv && environ_node)
 
   [[ ${#envs} != 0 ]] || return
@@ -34,6 +35,15 @@ function environ_node {
     echo -n "%F{22}"
     echo -n "< %K{15}⬢ ${version}%k"
     echo -n "%K{22}"
+  fi
+}
+
+function environ_go {
+  version=$(goenv version | awk '{ print $1 }')
+  if [ $version != 'system' ] && [ $version != '(set' ]; then
+    echo -n "%F{153}"
+    echo -n "< %K{0}ᵍ̥ ${version}%k"
+    echo -n "%K{153}"
   fi
 }
 
