@@ -66,7 +66,7 @@ TMPDIR=$(mktemp -d)
 
 announce "Configuring $(hostname -s)"
 
-sudo_permissions="[ '$(stat -f '%u:%Sg:%p' /usr/local 2>/dev/null)' != '501:staff:40775' ]"
+sudo_permissions="[ '$(stat -f '%u:%Sg:%p' /usr/local 2>/dev/null)' != '501:staff:40755' ]"
 sudo_xcode_tools="[ ! -x $('/usr/bin/xcode-select' -print-path 2>/dev/null || echo '/dev/null')/usr/bin/git ]"
 sudo_etc_shells='grep -q /usr/local/bin/zsh /etc/shells'
 

@@ -1,17 +1,35 @@
 function installed-version() {
   local app="/Applications/$1.app"
-  [ -r "$app" ] && xattr -p "dev.bootstrap.cache:$2" "$app" 2>/dev/null || echo '-'
+  [ -r "$app" ] && xattr -p "dev.bootstrap.cache:$2" "$app" 2>/dev/null | tr -d "\r\n" || echo '-'
+}
+
+function test-download() {
+  local name="$1"
+  local url="$2"
+  local etag='If-None-Match: "'"$3"'"'
+  local date="If-Modified-Since: $4"
+
+  if [ -n "$3" ] && [ -z "$4" ]; then
+    curl -IsL -X GET -w "%{http_code}" "$url" --header "$etag"
+  elif [ -z "$3" ] && [ -n "$4" ]; then
+    curl -IsL -X GET -w "%{http_code}" "$url" --header "$date"
+  else
+    curl -IsL -X GET -w "%{http_code}" "$url" --header "$etag" --header "$date"
+  fi
 }
 
 function download-app() {
   local name="$1"
   local url="$2"
   local target="$3"
-  local etag="If-None-Match: $4"
-  local date="If-Modified-Since: $5"
 
-  # TODO: Log if non-403 response *before* downloading file.
-  curl -fsSLv "$url" --header "$etag" --header "$date" -o "$target" 2>&1
+  local status=$(test-download "$1" "$2" "$4" "$5" | tail -n1)
+
+  if [ "$status" == "200" ]; then
+    curl -fsSLv "$url" -o "$target" 2>&1
+  elif [ "$status" != "304" ]; then
+    abort "Unexpected status code: $status"
+  fi
 }
 
 function is-dmg() {
@@ -71,7 +89,7 @@ function install-app() {
       } &&
 
       ditto --noqtn "$mount/$name.app" "/Applications/$name.app" &&
-      chmod g+w "/Applications/$name.app" &&
+      chmod -R g+w "/Applications/$name.app" &&
       ([ -z "$etag" ] || xattr -w 'dev.bootstrap.cache:etag' "$etag" "/Applications/$name.app") &&
       ([ -z "$date" ] || xattr -w 'dev.bootstrap.cache:date' "$date" "/Applications/$name.app") &&
       ([ -z "$xsum" ] || xattr -w 'dev.bootstrap.cache:xsum' "$xsum" "/Applications/$name.app")
@@ -86,12 +104,12 @@ mappings="
   'Github Desktop': 'https://central.github.com/mac/latest'
   'Screenhero': 'https://secure.screenhero.com/update/screenhero/Screenhero.dmg'
   'Spectacle': 'https://s3.amazonaws.com/spectacle/downloads/Spectacle+1.2.zip'
-  'WMail': 'https://github.com/Thomas101/wmail/releases/download/v2.1.0/WMail_2_1_0_osx.dmg'
+  'WMail': 'https://github.com/Thomas101/wmail/releases/download/v2.3.0/WMail_2_3_0_osx.dmg'
   'TogglDesktop': 'https://github.com/toggl/toggldesktop/releases/download/v7.4.7/TogglDesktop-7_4_7.dmg'
   'Slack': 'https://slack.com/ssb/download-osx'
 "
 
 export -f info warn abort good
-export -f install-app installed-version download-app is-dmg is-zip is-tarball mount-app
+export -f install-app installed-version test-download download-app is-dmg is-zip is-tarball mount-app
 echo "$mappings" | xargs -L1 -I @ -P16 bash -c "install-app '@'"
 unset -f install-app installed-version download-app is-dmg is-zip is-tarball mount-app
