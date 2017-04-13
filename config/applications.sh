@@ -73,7 +73,7 @@ function install-app() {
 
   local headers=$(download-app "$name" "$url" "$download" "$etag" "$date")
 
-  if [ -s $download ] && [ $(md5 -q $download) != $xsum ]; then
+  if [ -s $download ] && [ "$(md5 -q $download)" != "$xsum" ]; then
     etag="$(echo "$headers" | grep -i 'etag:' | awk '{ print $3 }' | sed 's/"//g')"
     date="$(echo "$headers" | grep -i 'last-modified' | sed 's/< Last-Modified: //')"
     xsum="$(md5 -q $download)"
