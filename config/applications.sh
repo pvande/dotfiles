@@ -99,7 +99,7 @@ function install-app() {
 }
 
 mappings="
-  'Google Chrome': 'https://dl.google.com/chrome/mac/stable/GoogleChrome.dmg'
+  'Google Chrome': 'https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg?src=0'
   'Atom': 'https://atom.io/download/mac'
   'Github Desktop': 'https://central.github.com/mac/latest'
   'Screenhero': 'https://secure.screenhero.com/update/screenhero/Screenhero.dmg'
