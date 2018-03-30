@@ -101,6 +101,7 @@ function install-app() {
 mappings="
   'Google Chrome': 'https://dl.google.com/chrome/mac/stable/GoogleChrome.dmg'
   'Atom': 'https://atom.io/download/mac'
+  'Docker': 'https://download.docker.com/mac/stable/Docker.dmg'
   'Github Desktop': 'https://central.github.com/mac/latest'
   'Screenhero': 'https://secure.screenhero.com/update/screenhero/Screenhero.dmg'
   'Spectacle': 'https://s3.amazonaws.com/spectacle/downloads/Spectacle+1.2.zip'
