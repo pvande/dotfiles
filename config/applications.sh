@@ -99,7 +99,7 @@ function install-app() {
 }
 
 mappings="
-  'Google Chrome': 'https://dl.google.com/chrome/mac/stable/GoogleChrome.dmg'
+  'Google Chrome': 'https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg?src=0'
   'Atom': 'https://atom.io/download/mac'
   'Docker': 'https://download.docker.com/mac/stable/Docker.dmg'
   'Github Desktop': 'https://central.github.com/mac/latest'
