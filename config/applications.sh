@@ -102,6 +102,7 @@ mappings="
   'Google Chrome': 'https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg?src=0'
   'Atom': 'https://atom.io/download/mac'
   'Docker': 'https://download.docker.com/mac/stable/Docker.dmg'
+  'Kitematic (Beta)': 'https://download.docker.com/kitematic/Kitematic-Mac.zip'
   'Github Desktop': 'https://central.github.com/mac/latest'
   'Screenhero': 'https://secure.screenhero.com/update/screenhero/Screenhero.dmg'
   'Spectacle': 'https://s3.amazonaws.com/spectacle/downloads/Spectacle+1.2.zip'
