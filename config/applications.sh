@@ -104,9 +104,7 @@ mappings="
   'Docker': 'https://download.docker.com/mac/stable/Docker.dmg'
   'Kitematic (Beta)': 'https://download.docker.com/kitematic/Kitematic-Mac.zip'
   'Github Desktop': 'https://central.github.com/mac/latest'
-  'Screenhero': 'https://secure.screenhero.com/update/screenhero/Screenhero.dmg'
   'Spectacle': 'https://s3.amazonaws.com/spectacle/downloads/Spectacle+1.2.zip'
-  'WMail': 'https://github.com/Thomas101/wmail/releases/download/v2.3.0/WMail_2_3_0_osx.dmg'
   'Slack': 'https://slack.com/ssb/download-osx'
 "
 
