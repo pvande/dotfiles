@@ -103,7 +103,7 @@ mappings="
   'Atom': 'https://atom.io/download/mac'
   'Docker': 'https://download.docker.com/mac/stable/Docker.dmg'
   'Kitematic (Beta)': 'https://download.docker.com/kitematic/Kitematic-Mac.zip'
-  'Github Desktop': 'https://central.github.com/mac/latest'
+  'Github Desktop': 'https://central.github.com/deployments/desktop/desktop/latest/darwin'
   'Spectacle': 'https://s3.amazonaws.com/spectacle/downloads/Spectacle+1.2.zip'
   'Slack': 'https://slack.com/ssb/download-osx'
 "
