@@ -1,14 +1,7 @@
 setopt PROMPT_SUBST
 
-function check_for {
-  /usr/bin/which -s $*
-}
-
 function environs {
   envs=()
-  envs+=$(check_for rbenv && environ_ruby)
-  envs+=$(check_for goenv && environ_go)
-  envs+=$(check_for nodenv && environ_node)
 
   [[ ${#envs} != 0 ]] || return
 
@@ -17,34 +10,6 @@ function environs {
     echo -n "${(S)env/</"\uE0B2%S%{%K{0}%}"}%s "
   done
   echo -n "%{%f%k%}"
-}
-
-function environ_ruby {
-  version=$(rbenv version | awk '{ print $1 }')
-  if [ $version != 'system' ] && [ $version != '(set' ]; then
-  active_gemsets="$(rbenv gemset active 2>/dev/null)"
-    echo -n "%F{160}"
-    echo -n "< %K{15}⌔ ${version}${active_gemsets:+ ($active_gemsets)}%k"
-    echo -n "%K{160}"
-  fi
-}
-
-function environ_node {
-  version=$(nodenv version | awk '{ print $1 }')
-  if [ $version != 'system' ] && [ $version != '(set' ]; then
-    echo -n "%F{22}"
-    echo -n "< %K{15}⬢ ${version}%k"
-    echo -n "%K{22}"
-  fi
-}
-
-function environ_go {
-  version=$(goenv version | awk '{ print $1 }')
-  if [ $version != 'system' ] && [ $version != '(set' ]; then
-    echo -n "%F{153}"
-    echo -n "< %K{0}ᵍ̥ ${version}%k"
-    echo -n "%K{153}"
-  fi
 }
 
 function prompt_vcs {
@@ -86,8 +51,6 @@ export RPROMPT
 
 # Additionally, if the command had a non-zero exit code, output the numeric
 # error code before the newline.
-
-# TODO: Translate numeric exit codes into signal names?
 
 function preexec {
   export PROMPT_COMMAND_EXECUTED=1
