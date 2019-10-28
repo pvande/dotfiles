@@ -88,7 +88,7 @@ if ($sudo_permissions) || ($sudo_xcode_tools) || !($sudo_etc_shells); then
   if $sudo_xcode_tools; then
     info "Installing the Xcode Command Line Tools..."
     sudo touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-    sudo /usr/sbin/softwareupdate -i "$(softwareupdate -l | grep -B 1 -E "Command Line (Developer|Tools)" | awk -F"*" '/^ +\\*/ {print $2}' | sed 's/^ *//' | tail -n1)" &>/dev/null
+    sudo /usr/sbin/softwareupdate -i "$(softwareupdate -l | grep -B 1 -E "Command Line (Developer|Tools)" | awk -F"Label: " '{print $2}' | tail -n1)" &>/dev/null
     sudo rm -f /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
     sudo '/usr/bin/xcode-select' --switch /Library/Developer/CommandLineTools &>/dev/null
   fi
