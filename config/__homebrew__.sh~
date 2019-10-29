@@ -1,7 +1,7 @@
 # Install the applications listed in the Brewfile.
-if ! brew bundle check --file="${DOTFILES_HOME}/Brewfile" &>/dev/null; then
+if ! brew bundle check &>/dev/null; then
   info "Applying Brewfile..."
-  brew bundle --file="${DOTFILES_HOME}/Brewfile" &>$LOGFILE || abort "Error applying Brewfile!"
+  brew bundle &>$LOGFILE || abort "Error applying Brewfile!"
 fi
 good "Brewfile is up-to-date..."
 

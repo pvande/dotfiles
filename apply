@@ -109,7 +109,7 @@ if ($sudo_permissions) || ($sudo_xcode_tools) || !($sudo_etc_shells); then
     sudo sh -c "echo '/usr/local/bin/zsh' >> /etc/shells"
   fi
 
-  warn "Releasing super-user privileges."
+  info "Releasing super-user privileges."
   sudo -k
 fi
 
@@ -147,7 +147,7 @@ if [ ! -d $PROJECTS_HOME/dotfiles ]; then
   {
     git clone $DOTFILES_REPO $DOTFILES_HOME
   } &>$LOGFILE || abort "Could not clone $DOTFILES_REPO!"
-elif !(cd $DOTFILES_HOME && git fetch -q && git status | grep -q 'up-to-date'); then
+elif !(cd $DOTFILES_HOME && git fetch -q && git status | grep -q "Your branch is up to date with 'origin/master'"); then
   info "Updating $DOTFILES_HOME..."
   {
     cd $DOTFILES_HOME &&
@@ -157,7 +157,7 @@ fi
 good "dotfiles repository is up-to-date..."
 
 for sh in $DOTFILES_HOME/config/*.sh ; do
-  [ -r "${sh}" ] && source "${sh}"
+  [ -r "${sh}" ] && LOGFILE="${TMPDIR}/$(basename "$sh" .sh).log" source "${sh}"
 done
 unset sh
 
