@@ -1,4 +1,11 @@
-if which docker &>/dev/null && docker stats --no-stream &>/dev/null; then
+if which docker &>/dev/null; then
+  if (! docker stats --no-stream &>/dev/null ); then
+    info "Waiting for Docker to start..."
+    open /Applications/Docker.app
+    while (! docker stats --no-stream &>/dev/null ); do
+      sleep 1
+    done
+  fi
 
   proxy_status=$(docker inspect nginx-proxy -f '{{.State.Status}}' 2>/dev/null)
   if [ "$proxy_status" == '' ]; then
@@ -22,9 +29,4 @@ if which docker &>/dev/null && docker stats --no-stream &>/dev/null; then
   docker network connect nginx-proxy-network nginx-proxy &>/dev/null
 
   good "nginx-proxy container is configured..."
-
-else
-
-  warn "Skipping Docker configuration; please start Docker.app and re-run $0."
-
 fi

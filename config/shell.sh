@@ -1,15 +1,8 @@
 if [ ! -L ~/.profile.d ]; then
   info "Configuring shells..."
   {
-    ln -s $DOTFILES_HOME/shell-rc.d $HOME/.profile.d
+    ln -s $DOTFILES_HOME/profile.d $HOME/.profile.d
   } &>$LOGFILE || abort "Error adding shell config!"
-fi
-
-if [ ! -L ~/.bash.profile.d ]; then
-  info "Configuring bash..."
-  {
-    ln -s $DOTFILES_HOME/bash.profile.d $HOME/.bash.profile.d
-  } &>$LOGFILE || abort "Error adding bash config!"
 fi
 
 if [ ! -L ~/.zsh.profile.d ] || [ ! -L ~/.zshrc ]; then
